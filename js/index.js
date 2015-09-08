@@ -31,78 +31,43 @@ var app = {
     // deviceready Event Handler
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicity call 'app.receivedEvent(...);'
+    // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-    },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
+        var push = PushNotification.init({
+            "android": {
+                "senderID": "411517468075"
+            },
+            "ios": {},
+            "windows": {}
+        });
 
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
+        push.on('registration', function(data) {
+            console.log("registration event");
+            document.getElementById("regId").innerHTML = data.registrationId;
+            console.log(JSON.stringify(data));
+        });
 
-        console.log('Received Event: ' + id);
-        var pushNotification = window.plugins.pushNotification;
-        if (device.platform == 'android' || device.platform == 'Android') {
-            alert("Register called");
-            //tu Project ID aca!!
-            pushNotification.register(this.successHandler, this.errorHandler,{"senderID":"PROJECT_ID","ecb":"app.onNotificationGCM"});
-        }
-        else {
-            alert("Register called");
-            pushNotification.register(this.successHandler,this.errorHandler,{"badge":"true","sound":"true","alert":"true","ecb":"app.onNotificationAPN"});
-        }
-    },
-    // result contains any message sent from the plugin call
-    successHandler: function(result) {
-        alert('Callback Success! Result = '+result)
-    },
-    errorHandler:function(error) {
-        alert(error);
-    },
-    onNotificationGCM: function(e) {
-        switch( e.event )
-        {
-            case 'registered':
-                if ( e.regid.length > 0 )
-                {
-                    console.log("Regid " + e.regid);
-                    alert('registration id = '+e.regid);
-                    //Cuando se registre le pasamos el regid al input
-                    document.getElementById('regId').value = e.regid;
-                }
-            break;
- 
-            case 'message':
-              // NOTIFICACION!!!
-              alert('message = '+e.message+' msgcnt = '+e.msgcnt);
-            break;
- 
-            case 'error':
-              alert('GCM error = '+e.msg);
-            break;
- 
-            default:
-              alert('An unknown GCM event has occurred');
-              break;
-        }
-    },
-    onNotificationAPN: function(event) {
-        var pushNotification = window.plugins.pushNotification;
-        alert("Running in JS - onNotificationAPN - Received a notification! " + event.alert);
-        
-        if (event.alert) {
-            navigator.notification.alert(event.alert);
-        }
-        if (event.badge) {
-            pushNotification.setApplicationIconBadgeNumber(this.successHandler, this.errorHandler, event.badge);
-        }
-        if (event.sound) {
-            var snd = new Media(event.sound);
-            snd.play();
-        }
+        push.on('notification', function(data) {
+        	console.log("notification event");
+            console.log(JSON.stringify(data));
+            var cards = document.getElementById("cards");
+            var push = '<div class="row">' +
+		  		  '<div class="col s12 m6">' +
+				  '  <div class="card darken-1">' +
+				  '    <div class="card-content black-text">' +
+				  '      <span class="card-title black-text">' + data.title + '</span>' +
+				  '      <p>' + data.message + '</p>' +
+				  '    </div>' +
+				  '  </div>' +
+				  ' </div>' +
+				  '</div>';
+            cards.innerHTML += push;
+        });
+
+        push.on('error', function(e) {
+            console.log("push error");
+        });
     }
 };
+
+app.initialize();
