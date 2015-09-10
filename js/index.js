@@ -27,6 +27,7 @@ var app = {
     // 'load', 'deviceready', 'offline', and 'online'.
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
+            alert("registrando 1");
     },
     // deviceready Event Handler
     //
@@ -44,7 +45,7 @@ var app = {
         push.on('registration', function(data) {
             console.log("registration event");
             document.getElementById("regId").innerHTML = data.registrationId;
-            alert(data.registrationId);
+            alert("registrando 2");
             console.log(JSON.stringify(data));
         });
 
