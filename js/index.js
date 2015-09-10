@@ -35,12 +35,12 @@ var app = {
     onDeviceReady: function() {
         var push = PushNotification.init({
             "android": {
-                "senderID": "741175631277"
+                "senderID": "411517468075"
             },
-            "ios": {}, 
-            "windows": {} 
+            "ios": {},
+            "windows": {}
         });
-        
+
         push.on('registration', function(data) {
             console.log("registration event");
             document.getElementById("regId").innerHTML = data.registrationId;
